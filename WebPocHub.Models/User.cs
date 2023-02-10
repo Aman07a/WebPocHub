@@ -5,7 +5,7 @@ namespace WebPocHub.Models
 	public class User
 	{
 		[Key]
-		public int UsertId { get; set; }
+		public int UserId { get; set; }
 
 		[MaxLength(100)]
 		[Required(ErrorMessage = "Email Id is a required field!")]
