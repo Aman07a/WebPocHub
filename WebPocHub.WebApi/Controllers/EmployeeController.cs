@@ -16,16 +16,52 @@ namespace WebPocHub.WebApi.Controllers
 			_commonRepository = commonRepository;
 		}
 
+		// [HttpGet]
+		// [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Employee>))]
+		// [ProducesResponseType(StatusCodes.Status404NotFound)]
+		// public IActionResult Get()
+		// {
+		// 	var employees = _commonRepository.GetAll();
+
+		// 	if (employees.Count == 0)
+		// 	{
+		// 		return NotFound();
+		// 	}
+
+		// 	return Ok(employees);
+		// }
+
+		// [HttpGet("{id:int}")]
+		// [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
+		// [ProducesResponseType(StatusCodes.Status404NotFound)]
+		// public IActionResult GetDetails(int id)
+		// {
+		// 	var employee = _commonRepository.GetDetails(id);
+		// 	return employee == null ? NotFound() : Ok(employee);
+		// }
+
 		[HttpGet]
-		public IEnumerable<Employee> Get()
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public ActionResult<IEnumerable<Employee>> Get()
 		{
-			return _commonRepository.GetAll();
+			var employees = _commonRepository.GetAll();
+
+			if (employees.Count == 0)
+			{
+				return NotFound();
+			}
+
+			return Ok(employees);
 		}
 
 		[HttpGet("{id:int}")]
-		public Employee GetDetails(int id)
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public ActionResult<Employee> GetDetails(int id)
 		{
-			return _commonRepository.GetDetails(id);
+			var employee = _commonRepository.GetDetails(id);
+			return employee == null ? NotFound() : Ok(employee);
 		}
 	}
 }
