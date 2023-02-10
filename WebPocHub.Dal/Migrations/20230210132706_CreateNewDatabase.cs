@@ -68,7 +68,7 @@ namespace WebPocHub.Dal.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UsertId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -76,7 +76,7 @@ namespace WebPocHub.Dal.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.UsertId);
+                    table.PrimaryKey("PK_Users", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,

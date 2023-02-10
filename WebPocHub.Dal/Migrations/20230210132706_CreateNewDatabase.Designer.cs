@@ -12,7 +12,7 @@ using WebPocHub.Dal;
 namespace WebPocHub.Dal.Migrations
 {
     [DbContext(typeof(WebPocHubDbContext))]
-    [Migration("20230210100118_CreateNewDatabase")]
+    [Migration("20230210132706_CreateNewDatabase")]
     partial class CreateNewDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -207,11 +207,11 @@ namespace WebPocHub.Dal.Migrations
 
             modelBuilder.Entity("WebPocHub.Models.User", b =>
                 {
-                    b.Property<int>("UsertId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UsertId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -226,7 +226,7 @@ namespace WebPocHub.Dal.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
-                    b.HasKey("UsertId");
+                    b.HasKey("UserId");
 
                     b.HasIndex("RoleId");
 
