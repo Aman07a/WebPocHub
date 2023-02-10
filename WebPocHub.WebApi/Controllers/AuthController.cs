@@ -9,21 +9,21 @@ namespace WebPocHub.WebApi.Controllers
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
-		private readonly IAuthenticationRepository _authenticationRepository;
+		private readonly IAuthenticationRepository _wphRepository;
 
-		public AuthController(IAuthenticationRepository authenticationRepository)
+		public AuthController(IAuthenticationRepository wphRepository)
 		{
-			_authenticationRepository = authenticationRepository;
+			_wphRepository = wphRepository;
 		}
 
-		[HttpPost]
+		[HttpPost("RegisterUser")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public ActionResult Create(User user)
 		{
 			var passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
 			user.Password = passwordHash;
-			var result = _authenticationRepository.RegisterUser(user);
+			var result = _wphRepository.RegisterUser(user);
 
 			if (result > 0)
 			{
@@ -40,7 +40,7 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public ActionResult<AuthResponce> GetDetails(User user)
 		{
-			var authUser = _authenticationRepository.CheckCredentials(user);
+			var authUser = _wphRepository.CheckCredentials(user);
 
 			if (authUser == null)
 			{
