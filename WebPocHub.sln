@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebPocHub.Models", "WebPocH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPocHub.Dal", "WebPocHub.Dal\WebPocHub.Dal.csproj", "{87E26A28-0CFB-440D-A9D8-9BDD859BAF24}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebPocHub.WebApi", "WebPocHub.WebApi\WebPocHub.WebApi.csproj", "{E2003BAA-8179-427D-808E-5BCA7479E868}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87E26A28-0CFB-440D-A9D8-9BDD859BAF24}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87E26A28-0CFB-440D-A9D8-9BDD859BAF24}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87E26A28-0CFB-440D-A9D8-9BDD859BAF24}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2003BAA-8179-427D-808E-5BCA7479E868}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2003BAA-8179-427D-808E-5BCA7479E868}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2003BAA-8179-427D-808E-5BCA7479E868}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2003BAA-8179-427D-808E-5BCA7479E868}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
