@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebPocHub.Dal;
 using WebPocHub.Models;
+using WebPocHub.WebApi.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddDbContext<WebPocHubDbContext>(options => options.UseSqlServe
 builder.Services.AddTransient<ICommonRepository<Employee>, CommonRepository<Employee>>();
 builder.Services.AddTransient<ICommonRepository<Event>, CommonRepository<Event>>();
 builder.Services.AddTransient<IAuthenticationRepository, AuthenticationRepository>();
+builder.Services.AddScoped<ITokenManager, TokenManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
