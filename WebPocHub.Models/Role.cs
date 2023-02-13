@@ -5,7 +5,6 @@ namespace WebPocHub.Models
 {
 	public class Role
 	{
-		[Key]
 		public int RoleId { get; set; }
 
 		[MaxLength(30)]

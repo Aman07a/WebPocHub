@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebPocHub.Dal;
 using WebPocHub.Models;
@@ -7,11 +7,11 @@ namespace WebPocHub.WebApi.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class EmployeeController : ControllerBase
+	public class EmployeesController : ControllerBase
 	{
 		private readonly ICommonRepository<Employee> _employeeRepository;
 
-		public EmployeeController(ICommonRepository<Employee> employeeRepository)
+		public EmployeesController(ICommonRepository<Employee> employeeRepository)
 		{
 			_employeeRepository = employeeRepository;
 		}
@@ -43,11 +43,12 @@ namespace WebPocHub.WebApi.Controllers
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult<IEnumerable<Employee>> Get()
 		{
 			var employees = _employeeRepository.GetAll();
 
-			if (employees.Count == 0)
+			if (employees.Count <= 0)
 			{
 				return NotFound();
 			}
@@ -58,6 +59,7 @@ namespace WebPocHub.WebApi.Controllers
 		[HttpGet("{id:int}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult<Employee> GetDetails(int id)
 		{
 			var employee = _employeeRepository.GetDetails(id);
@@ -67,6 +69,7 @@ namespace WebPocHub.WebApi.Controllers
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult Create(Employee employee)
 		{
 			_employeeRepository.Insert(employee);
@@ -87,6 +90,7 @@ namespace WebPocHub.WebApi.Controllers
 		[HttpPut]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult Update(Employee employee)
 		{
 			_employeeRepository.Update(employee);
@@ -103,8 +107,9 @@ namespace WebPocHub.WebApi.Controllers
 
 		[HttpDelete("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult Delete(int id)
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[Authorize(Roles = "Hr")]
+		public ActionResult<Employee> Delete(int id)
 		{
 			var employee = _employeeRepository.GetDetails(id);
 

@@ -13,16 +13,11 @@ namespace WebPocHub.Dal
 		{
 		}
 
-		public DbSet<Employee> Employees => Set<Employee>();
-		public DbSet<Event> Events => Set<Event>();
-		public DbSet<Role> Roles => Set<Role>();
-		public DbSet<User> Users => Set<User>();
-
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		protected override void OnConfiguring(DbContextOptionsBuilder options)
 		{
-			if (!optionsBuilder.IsConfigured)
+			if (!options.IsConfigured)
 			{
-				optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=UdemyWebApiDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;Trusted_Connection=true;");
+				options.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=UdemyWebApiDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False;Trusted_Connection=true;");
 			}
 		}
 
@@ -38,7 +33,7 @@ namespace WebPocHub.Dal
 					Country = "United Kingdom",
 					Zipcode = "473837",
 					Phone = "+044 73783783",
-					Email = "john.mark@email.com",
+					Email = "john.mark@webpochub.com",
 					Skillsets = "DBA",
 					Avatar = "/images/john-mark.png"
 				},
@@ -51,7 +46,7 @@ namespace WebPocHub.Dal
 					Country = "India",
 					Zipcode = "367534",
 					Phone = "+91 7865678645",
-					Email = "alisha.c@email.com",
+					Email = "alisha.c@webpochub.com",
 					Skillsets = "People Management",
 					Avatar = "/images/alisha-c.png"
 				},
@@ -64,7 +59,7 @@ namespace WebPocHub.Dal
 					Country = "India",
 					Zipcode = "411051",
 					Phone = "+044 73783783",
-					Email = "dabade.pravinkumar@email.com",
+					Email = "dabade.pravinkumar@webpochub.com",
 					Skillsets = "Trainer & Consultant",
 					Avatar = "/images/dabade-pravinkumar.png"
 				}
@@ -85,5 +80,10 @@ namespace WebPocHub.Dal
 				}
 			);
 		}
+
+		public DbSet<Employee> Employees { get; set; }
+		public DbSet<Event> Events { get; set; }
+		public DbSet<Role> Roles { get; set; }
+		public DbSet<User> Users { get; set; }
 	}
 }

@@ -7,9 +7,9 @@ namespace WebPocHub.Dal
 	{
 		private readonly WebPocHubDbContext _dbContext;
 
-		public AuthenticationRepository(WebPocHubDbContext dbContext)
+		public AuthenticationRepository(WebPocHubDbContext context)
 		{
-			_dbContext = dbContext;
+			_dbContext = context;
 		}
 
 		public User? CheckCredentials(User user)
@@ -20,7 +20,7 @@ namespace WebPocHub.Dal
 
 		public string GetUserRole(int roleId)
 		{
-			return _dbContext.Roles.SingleOrDefault(role => role.RoleId == roleId)!.RoleName;
+			return _dbContext.Roles.SingleOrDefault(role => role.RoleId == roleId).RoleName;
 		}
 
 		public int RegisterUser(User user)

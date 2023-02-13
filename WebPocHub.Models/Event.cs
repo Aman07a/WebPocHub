@@ -6,7 +6,6 @@ namespace WebPocHub.Models
 {
 	public class Event
 	{
-		[Key]
 		public int EventId { get; set; }
 
 		[MaxLength(6)]

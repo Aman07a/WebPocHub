@@ -28,8 +28,7 @@ namespace WebPocHub.Models
 		public string Skillsets { get; set; } = string.Empty;
 
 		[MaxLength(15)]
-		[Required(ErrorMessage = "Employee phone is a required field!")]
-		[Phone]
+		[Required(ErrorMessage = "Employee phone number is a required field!")]
 		public string Phone { get; set; } = string.Empty;
 
 		[MaxLength(100)]

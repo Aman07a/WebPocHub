@@ -10,9 +10,9 @@ namespace WebPocHub.WebApi.Jwt
 	{
 		private readonly SymmetricSecurityKey _key;
 
-		public TokenManager(IConfiguration configuration)
+		public TokenManager(IConfiguration config)
 		{
-			_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["WebPocHubJWT:Secret"]!));
+			_key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["WebPocHubJWT:Secret"]));
 		}
 
 		public string GenerateToken(User user, string roleName)

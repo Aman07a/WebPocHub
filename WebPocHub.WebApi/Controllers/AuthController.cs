@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebPocHub.Dal;
 using WebPocHub.Models;
 using WebPocHub.WebApi.Jwt;
@@ -10,12 +9,12 @@ namespace WebPocHub.WebApi.Controllers
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
-		private readonly IAuthenticationRepository _wphRepository;
+		private readonly IAuthenticationRepository _wphAuthentication;
 		private readonly ITokenManager _tokenManager;
 
-		public AuthController(IAuthenticationRepository wphRepository, ITokenManager tokenManager)
+		public AuthController(IAuthenticationRepository wphAuthentication, ITokenManager tokenManager)
 		{
-			_wphRepository = wphRepository;
+			_wphAuthentication = wphAuthentication;
 			_tokenManager = tokenManager;
 		}
 
@@ -26,7 +25,7 @@ namespace WebPocHub.WebApi.Controllers
 		{
 			var passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
 			user.Password = passwordHash;
-			var result = _wphRepository.RegisterUser(user);
+			var result = _wphAuthentication.RegisterUser(user);
 
 			if (result > 0)
 			{
@@ -41,27 +40,27 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult<AuthResponce> GetDetails(User user)
+		public ActionResult<AuthResponse> GetDetails(User user)
 		{
-			var authUser = _wphRepository.CheckCredentials(user);
+			var authUser = _wphAuthentication.CheckCredentials(user);
 
 			if (authUser == null)
 			{
 				return NotFound();
 			}
 
-			if (authUser != null && BCrypt.Net.BCrypt.Verify(user.Password, authUser.Password))
+			if (authUser != null && !BCrypt.Net.BCrypt.Verify(user.Password, authUser.Password))
 			{
 				return BadRequest("Incorrect Password! Please check your password!");
 			}
 
-			var roleName = _wphRepository.GetUserRole(authUser!.RoleId);
+			var roleName = _wphAuthentication.GetUserRole(authUser.RoleId);
 
-			var authResponse = new AuthResponce()
+			var authResponse = new AuthResponse()
 			{
 				IsAuthenticated = true,
 				Role = roleName,
-				Token = _tokenManager.GenerateToken(authUser!, roleName)
+				Token = _tokenManager.GenerateToken(authUser, roleName)
 			};
 
 			return Ok(authResponse);
