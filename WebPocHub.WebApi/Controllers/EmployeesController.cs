@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using WebPocHub.Dal;
 using WebPocHub.Models;
@@ -9,6 +10,7 @@ namespace WebPocHub.WebApi.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[EnableCors("PublicPolicy")]
 	public class EmployeesController : ControllerBase
 	{
 		private readonly ICommonRepository<Employee> _employeeRepository;

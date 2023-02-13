@@ -19,6 +19,20 @@ builder.Services.AddScoped<ITokenManager, TokenManager>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy(
+		name: "PublicPolicy",
+		policy =>
+		{
+			policy.AllowAnyHeader();
+			policy.AllowAnyMethod();
+			policy.AllowAnyOrigin();
+		}
+	);
+});
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
 	options.TokenValidationParameters = new TokenValidationParameters
@@ -68,6 +82,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 
