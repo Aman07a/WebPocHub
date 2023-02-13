@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebPocHub.Dal;
 using WebPocHub.Models;
+using WebPocHub.WebApi.DTO;
 
 namespace WebPocHub.WebApi.Controllers
 {
@@ -10,10 +12,12 @@ namespace WebPocHub.WebApi.Controllers
 	public class EmployeesController : ControllerBase
 	{
 		private readonly ICommonRepository<Employee> _employeeRepository;
+		private readonly IMapper _mapper;
 
-		public EmployeesController(ICommonRepository<Employee> employeeRepository)
+		public EmployeesController(ICommonRepository<Employee> employeeRepository, IMapper mapper)
 		{
 			_employeeRepository = employeeRepository;
+			_mapper = mapper;
 		}
 
 		// [HttpGet]
@@ -53,7 +57,7 @@ namespace WebPocHub.WebApi.Controllers
 				return NotFound();
 			}
 
-			return Ok(employees);
+			return Ok(_mapper.Map<IEnumerable<EmployeeDTO>>(employees));
 		}
 
 		[HttpGet("{id:int}")]
@@ -63,7 +67,7 @@ namespace WebPocHub.WebApi.Controllers
 		public ActionResult<Employee> GetDetails(int id)
 		{
 			var employee = _employeeRepository.GetDetails(id);
-			return employee == null ? NotFound() : Ok(employee);
+			return employee == null ? NotFound() : Ok(_mapper.Map<EmployeeDTO>(employee));
 		}
 
 		[HttpPost]
@@ -72,7 +76,9 @@ namespace WebPocHub.WebApi.Controllers
 		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult Create(Employee employee)
 		{
-			_employeeRepository.Insert(employee);
+			var employeeModel = _mapper.Map<Employee>(employee);
+
+			_employeeRepository.Insert(employeeModel);
 
 			var result = _employeeRepository.SaveChanges();
 
@@ -81,7 +87,8 @@ namespace WebPocHub.WebApi.Controllers
 				// actionName - The name of the action to use for generating the URL
 				// routeValues - The route data to use for generating the URL
 				// value - The content value to format in the entity body
-				return CreatedAtAction("GetDetails", new { id = employee.EmployeeId }, employee);
+				var employeeDetails = _mapper.Map<EmployeeDTO>(employeeModel);
+				return CreatedAtAction("GetDetails", new { id = employeeDetails.EmployeeId }, employeeDetails);
 			}
 
 			return BadRequest();
@@ -93,7 +100,9 @@ namespace WebPocHub.WebApi.Controllers
 		[Authorize(Roles = "Employee,Hr")]
 		public ActionResult Update(Employee employee)
 		{
-			_employeeRepository.Update(employee);
+			var employeeModel = _mapper.Map<Employee>(employee);
+
+			_employeeRepository.Update(employeeModel);
 
 			var result = _employeeRepository.SaveChanges();
 
