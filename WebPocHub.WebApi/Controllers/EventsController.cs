@@ -1,60 +1,68 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebPocHub.Dal;
 using WebPocHub.Models;
+using WebPocHub.WebApi.DTO;
 
 namespace WebPocHub.WebApi.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[EnableCors("PublicPolicy")]
 	public class EventsController : ControllerBase
 	{
 		private readonly ICommonRepository<Event> _eventRepository;
+		private readonly IMapper _mapper;
 
-		public EventsController(ICommonRepository<Event> eventRepository)
+		public EventsController(ICommonRepository<Event> eventRepository, IMapper mapper)
 		{
 			_eventRepository = eventRepository;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public ActionResult<IEnumerable<Event>> Get()
+		[Authorize(Roles = "Employee,Hr")]
+		public async Task<ActionResult<IEnumerable<EventDTO>>> Get()
 		{
-			var events = _eventRepository.GetAll();
+			var events = await _eventRepository.GetAll();
 
-			if (events.Count == 0)
+			if (events == null)
 			{
 				return NotFound();
 			}
 
-			return Ok(events);
+			return Ok(_mapper.Map<IEnumerable<EventDTO>>(events));
 		}
 
 		[HttpGet("{id:int}")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public ActionResult<Event> GetDetails(int id)
+		[Authorize(Roles = "Employee,Hr")]
+		public async Task<ActionResult<EventDTO>> GetDetails(int id)
 		{
-			var events = _eventRepository.GetDetails(id);
-			return events == null ? NotFound() : Ok(events);
+			var events = await _eventRepository.GetDetails(id);
+			return events == null ? NotFound() : Ok(_mapper.Map<EventDTO>(events));
 		}
 
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult Create(Event events)
+		[Authorize(Roles = "Employee,Hr")]
+		public async Task<ActionResult> Create(NewEventDTO? events)
 		{
-			_eventRepository.Insert(events);
+			var eventModel = _mapper.Map<Event>(events);
 
-			var result = _eventRepository.SaveChanges();
+			var result = await _eventRepository.Insert(eventModel);
 
-			if (result > 0)
+			if (result != null)
 			{
-				// actionName - The name of the action to use for generating the URL
-				// routeValues - The route data to use for generating the URL
-				// value - The content value to format in the entity body
-				return CreatedAtAction("GetDetails", new { id = events.EventId }, events);
+				var eventsDetails = _mapper.Map<EventDTO>(eventModel);
+				return CreatedAtAction("GetDetails", new { id = eventsDetails.EventId }, eventsDetails);
 			}
 
 			return BadRequest();
@@ -63,13 +71,14 @@ namespace WebPocHub.WebApi.Controllers
 		[HttpPut]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult Update(Event events)
+		[Authorize(Roles = "Employee,Hr")]
+		public async Task<ActionResult> Update(UpdateEventDTO events)
 		{
-			_eventRepository.Update(events);
+			var eventModel = _mapper.Map<Event>(events);
 
-			var result = _eventRepository.SaveChanges();
+			var result = await _eventRepository.Update(eventModel);
 
-			if (result > 0)
+			if (result != null)
 			{
 				return NoContent();
 			}
@@ -79,19 +88,19 @@ namespace WebPocHub.WebApi.Controllers
 
 		[HttpDelete("{id}")]
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public ActionResult Delete(int id)
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[Authorize(Roles = "Hr")]
+		public async Task<ActionResult> Delete(int id)
 		{
-			var employee = _eventRepository.GetDetails(id);
+			var events = await _eventRepository.GetDetails(id);
 
-			if (employee == null)
+			if (events == null)
 			{
 				return NotFound();
 			}
 			else
 			{
-				_eventRepository.Delete(employee);
-				_eventRepository.SaveChanges();
+				await _eventRepository.Delete(events.EventId);
 				return NoContent();
 			}
 		}
