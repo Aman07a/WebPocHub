@@ -87,4 +87,19 @@ app.MapPut("/api/employees", async (Employee employee, ICommonRepository<Employe
 .Produces<Employee>(StatusCodes.Status204NoContent)
 .Produces(StatusCodes.Status400BadRequest);
 
+app.MapDelete("/api/employees/{id:int}", async (int id, ICommonRepository<Employee> _repository) =>
+{
+	var output = await _repository.Delete(id);
+
+	if (output == null)
+	{
+		return Results.NotFound();
+	}
+
+	return Results.NoContent();
+
+}).WithName("Delete")
+.Produces<Employee>(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status404NotFound);
+
 app.Run();
