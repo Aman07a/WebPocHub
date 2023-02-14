@@ -43,8 +43,18 @@ app.MapGet("/api/employees", async (ICommonRepository<Employee> _repository) =>
 	}
 
 	return Results.Ok(employees);
+
 }).WithName("GetAll")
 .Produces<IEnumerable<Employee>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound);
+
+app.MapGet("/api/employee/{id:int}", async (int id, ICommonRepository<Employee> _repository) =>
+{
+	var employee = await _repository.GetDetails(id);
+	return employee == null ? Results.NotFound() : Results.Ok(employee);
+
+}).WithName("Details")
+.Produces<Employee>(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status404NotFound);
 
 app.Run();
