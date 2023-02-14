@@ -72,4 +72,19 @@ app.MapPost("/api/emloyees", async (Employee employee, ICommonRepository<Employe
 .Produces<Employee>(StatusCodes.Status201Created)
 .Produces(StatusCodes.Status400BadRequest);
 
+app.MapPut("/api/employees", async (Employee employee, ICommonRepository<Employee> _repository) =>
+{
+	var output = await _repository.Update(employee);
+
+	if (output != null)
+	{
+		return Results.NoContent();
+	}
+
+	return Results.BadRequest();
+
+}).WithName("Update")
+.Produces<Employee>(StatusCodes.Status204NoContent)
+.Produces(StatusCodes.Status400BadRequest);
+
 app.Run();
