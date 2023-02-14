@@ -12,38 +12,44 @@ namespace WebPocHub.Dal
 		public CommonRepository(WebPocHubDbContext context)
 		{
 			_dbContext = context;
-			table = _dbContext.Set<T>();
 		}
 
-		public List<T> GetAll()
+		public async Task<List<T>> GetAll()
 		{
-			return table.ToList();
+			return await _dbContext.Set<T>().ToListAsync();
 		}
 
-		public T GetDetails(int id)
+		public async Task<T> GetDetails(int id)
 		{
-			return table.Find(id);
+			return await _dbContext.Set<T>().FindAsync(id);
 		}
 
-		public void Insert(T item)
+		public async Task<T> Insert(T entity)
 		{
-			table.Add(item);
+			_dbContext.Set<T>().Add(entity);
+			await _dbContext.SaveChangesAsync();
+			return entity;
 		}
 
-		public void Update(T item)
+		public async Task<T> Update(T entity)
 		{
-			table.Attach(item);
-			_dbContext.Entry(item).State = EntityState.Modified;
+			_dbContext.Entry(entity).State = EntityState.Modified;
+			await _dbContext.SaveChangesAsync();
+			return entity;
 		}
 
-		public void Delete(T item)
+		public async Task<T> Delete(int id)
 		{
-			table.Remove(item);
-		}
+			var entity = await _dbContext.Set<T>().FindAsync(id);
 
-		public int SaveChanges()
-		{
-			return _dbContext.SaveChanges();
+			if (entity == null)
+			{
+				return entity;
+			}
+
+			_dbContext.Set<T>().Remove(entity);
+			await _dbContext.SaveChangesAsync();
+			return entity;
 		}
 	}
 }

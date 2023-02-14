@@ -26,9 +26,9 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[Authorize(Roles = "Employee,Hr")]
-		public ActionResult<IEnumerable<Employee>> Get()
+		public async Task<ActionResult<IEnumerable<EmployeeDTO>>> Get()
 		{
-			var employees = _employeeRepository.GetAll();
+			var employees = await _employeeRepository.GetAll();
 
 			if (employees.Count <= 0)
 			{
@@ -42,9 +42,9 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[Authorize(Roles = "Employee,Hr")]
-		public ActionResult<Employee> GetDetails(int id)
+		public async Task<ActionResult<EmployeeDTO>> GetDetails(int id)
 		{
-			var employee = _employeeRepository.GetDetails(id);
+			var employee = await _employeeRepository.GetDetails(id);
 			return employee == null ? NotFound() : Ok(_mapper.Map<EmployeeDTO>(employee));
 		}
 
@@ -52,19 +52,14 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[Authorize(Roles = "Employee,Hr")]
-		public ActionResult Create(Employee employee)
+		public async Task<ActionResult> Create(NewEmployeeDTO? employee)
 		{
 			var employeeModel = _mapper.Map<Employee>(employee);
 
-			_employeeRepository.Insert(employeeModel);
+			var result = await _employeeRepository.Insert(employeeModel);
 
-			var result = _employeeRepository.SaveChanges();
-
-			if (result > 0)
+			if (result != null)
 			{
-				// actionName - The name of the action to use for generating the URL
-				// routeValues - The route data to use for generating the URL
-				// value - The content value to format in the entity body
 				var employeeDetails = _mapper.Map<EmployeeDTO>(employeeModel);
 				return CreatedAtAction("GetDetails", new { id = employeeDetails.EmployeeId }, employeeDetails);
 			}
@@ -76,15 +71,13 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[Authorize(Roles = "Employee,Hr")]
-		public ActionResult Update(Employee employee)
+		public async Task<ActionResult> Update(UpdateEmployeeDTO employee)
 		{
 			var employeeModel = _mapper.Map<Employee>(employee);
 
-			_employeeRepository.Update(employeeModel);
+			var result = await _employeeRepository.Update(employeeModel);
 
-			var result = _employeeRepository.SaveChanges();
-
-			if (result > 0)
+			if (result != null)
 			{
 				return NoContent();
 			}
@@ -96,9 +89,9 @@ namespace WebPocHub.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[Authorize(Roles = "Hr")]
-		public ActionResult<Employee> Delete(int id)
+		public async Task<ActionResult> Delete(int id)
 		{
-			var employee = _employeeRepository.GetDetails(id);
+			var employee = await _employeeRepository.GetDetails(id);
 
 			if (employee == null)
 			{
@@ -106,8 +99,7 @@ namespace WebPocHub.WebApi.Controllers
 			}
 			else
 			{
-				_employeeRepository.Delete(employee);
-				_employeeRepository.SaveChanges();
+				await _employeeRepository.Delete(employee.EmployeeId);
 				return NoContent();
 			}
 		}
