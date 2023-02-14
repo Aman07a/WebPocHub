@@ -57,4 +57,19 @@ app.MapGet("/api/employee/{id:int}", async (int id, ICommonRepository<Employee> 
 .Produces<Employee>(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status404NotFound);
 
+app.MapPost("/api/emloyees", async (Employee employee, ICommonRepository<Employee> _repository) =>
+{
+	var output = await _repository.Insert(employee);
+
+	if (output != null)
+	{
+		return Results.Created($"/api/employees/{output.EmployeeId}", output);
+	}
+
+	return Results.BadRequest();
+
+}).WithName("Create")
+.Produces<Employee>(StatusCodes.Status201Created)
+.Produces(StatusCodes.Status400BadRequest);
+
 app.Run();
