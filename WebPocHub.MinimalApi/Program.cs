@@ -1,9 +1,26 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Collections.Generic;
+using WebPocHub.Dal;
+using WebPocHub.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<WebPocHubDbContext>(options =>
+{
+	options.UseSqlServer(builder.Configuration.GetConnectionString("MsSqlConStr"));
+});
+
+builder.Services.AddScoped<ICommonRepository<Employee>, CommonRepository<Employee>>();
 
 var app = builder.Build();
 
@@ -16,28 +33,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/api/employees", async (ICommonRepository<Employee> _repository) =>
 {
-	"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+	var employees = await _repository.GetAll();
 
-app.MapGet("/weatherforecast", () =>
-{
-	var forecast = Enumerable.Range(1, 5).Select(index =>
-		new WeatherForecast
-		(
-			DateTime.Now.AddDays(index),
-			Random.Shared.Next(-20, 55),
-			summaries[Random.Shared.Next(summaries.Length)]
-		))
-		.ToArray();
-	return forecast;
-})
-.WithName("GetWeatherForecast");
+	if (employees.Count <= 0)
+	{
+		return Results.NotFound();
+	}
+
+	return Results.Ok(employees);
+}).WithName("GetAll")
+.Produces<IEnumerable<Employee>>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status404NotFound);
 
 app.Run();
-
-internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
-{
-	public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
